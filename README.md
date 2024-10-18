@@ -29,14 +29,6 @@ There are three ways to use this package. The first one uses a python script, th
 
 - First, find and set a static IP address (usually: 192.168.194.90) on your computer. 
 
-#### Python
-- To use the python script open a new terminal to run the node:
-```
-$ cd ~/ros2_ws
-$ source install/setup.bash
-$ ros2 run dvl_a50 dvl_a50.py --ros-args -p ip_address:='192.168.194.95'
-```
-
 #### C++ 
 - To use the C++ node: 
 ```
