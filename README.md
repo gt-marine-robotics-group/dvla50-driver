@@ -8,7 +8,7 @@ This repository contains a plugin for the use of the [Water Linked](https://stor
 - Ubuntu 20.04 or newer
 
 ### Dependencies
-- [dvl_msgs](https://github.com/paagutie/dvl_msgs)
+- [dvl_msgs](https://github.com/gt-marine-robotics-group/dvl_msgs)
 - [JSON for Modern C++](https://github.com/nlohmann/json)
 
 
@@ -18,8 +18,8 @@ This repository contains a plugin for the use of the [Water Linked](https://stor
 $ source /opt/ros/galactic/setup.bash
 $ mkdir -p ~/ros2_ws/src
 $ cd ~/ros2_ws/src
-$ git clone https://github.com/paagutie/dvl_msgs.git
-$ git clone --recurse-submodules https://github.com/paagutie/dvl-a50.git
+$ git clone https://github.com/gt-marine-robotics-group/dvl_msgs
+$ git clone --recurse-submodules https://github.com/gt-marine-robotics-group/dvla50-driver.git
 $ cd ..
 $ colcon build
 ```
@@ -91,6 +91,8 @@ $ ros2 lifecycle set /dvl_a50_node shutdown
 ## ROS2 Topics 
 - `/dvl/data`
 - `/dvl/position`
+- `/dvl/velocity`
+- `/dvl/odometry`
 - `dvl/config/status`
 - `dvl/command/response`
 - `dvl/config/command`
