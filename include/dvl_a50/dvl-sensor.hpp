@@ -82,6 +82,8 @@ private:
     rclcpp::Publisher<dvl_msgs::msg::CommandResponse>::SharedPtr dvl_pub_command_response;
     rclcpp::Publisher<dvl_msgs::msg::ConfigStatus>::SharedPtr dvl_pub_config_status;
     rclcpp::Subscription<dvl_msgs::msg::ConfigCommand>::SharedPtr dvl_sub_config_command;
+    geometry_msgs::msg::PoseWithCovarianceStamped saved_dvldr;
+    geometry_msgs::msg::TwistWithCovarianceStamped saved_twist;
 
 
     void handle_receive();

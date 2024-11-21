@@ -124,9 +124,11 @@ void DVL_A50::handle_receive()
             if (json_data.contains("altitude")) {
                 this->publish_vel_trans_report();
                 this->publish_vel_twist_report();
+                this->publish_odometry_report();
             }
             else if (json_data.contains("pitch")) {
                 this->publish_dead_reckoning_report();
+                this->publish_odometry_report();
             }
             else if (json_data.contains("response_to"))
             {
@@ -250,6 +252,7 @@ void DVL_A50::publish_vel_twist_report()
     linear.y = double(json_data["vy"]);
     linear.z = double(json_data["vz"]);
     twist.twist.twist.linear = linear;
+    saved_twist = twist;
     dvl_pub_twist->publish(twist);
 }
 
@@ -296,6 +299,7 @@ void DVL_A50::publish_dead_reckoning_report()
         }
     }
     DVLDR.pose.covariance = covmatrix;
+    saved_dvldr = DVLDR;
     dvl_pub_pos->publish(DVLDR);
 }
 
@@ -304,50 +308,9 @@ void DVL_A50::publish_odometry_report()
     // Calculate dead reckoning
     nav_msgs::msg::Odometry dvl_odometry;
     dvl_odometry.header.stamp = Node::now();
-    dvl_odometry.header.frame_id = position_frame_id;
-
-    dvl_odometry.pose.pose.position.x = double(json_data["x"]);
-    dvl_odometry.pose.pose.position.y = double(json_data["y"]);
-    dvl_odometry.pose.pose.position.z = double(json_data["z"]);
-    tf2::Quaternion q;
-    double roll = double(json_data["roll"]);
-    double pitch = double(json_data["pitch"]);
-    double yaw = double(json_data["yaw"]);
-    // Acc to datasheet, rpy is in degrees
-    q.setRPY(roll * M_PI / 180, pitch * M_PI / 180, yaw * M_PI / 180); 
-    dvl_odometry.pose.pose.orientation.x = double(q.x());
-    dvl_odometry.pose.pose.orientation.y = double(q.y());
-    dvl_odometry.pose.pose.orientation.z = double(q.z());
-    dvl_odometry.pose.pose.orientation.w = double(q.w());
-    std::array<double,36> covmatrix;
-    // 0, 7, 14, 21, 28, 35
-    for (int i = 0; i < 36; i++) {
-        if(i % 7 == 0) {
-            covmatrix[i] = double(1);
-        } else {
-            covmatrix[i] = double(0);
-        }
-    }
-    dvl_odometry.pose.covariance = covmatrix;
-
-    // Calculate twist
-    std::array<double, 36> covmatrix_velocity;
-    for (int i = 0; i < 6; i++) {
-        for (int j = 0; j < 6; j++) {
-            if (i < 3 && j < 3) {
-                covmatrix_velocity[(i * 6) + j] = double(json_data["covariance"][i][j]);
-            } else {
-                covmatrix_velocity[(i * 6) + j] = 0.0;
-            }     
-        }
-    }
-    dvl_odometry.twist.covariance = covmatrix_velocity;
-    geometry_msgs::msg::Vector3 linear;
-    linear.x = double(json_data["vx"]);
-    linear.y = double(json_data["vy"]);
-    linear.z = double(json_data["vz"]);
-    dvl_odometry.twist.twist.linear = linear;
-    
+    dvl_odometry.header.frame_id = "dvl_a50_link";
+    dvl_odometry.pose = saved_dvldr;
+    dvl_odometry.twist = saved_twist;
     // Publish data
     dvl_pub_odom->publish(dvl_odometry);
 }
