@@ -309,8 +309,8 @@ void DVL_A50::publish_odometry_report()
     nav_msgs::msg::Odometry dvl_odometry;
     dvl_odometry.header.stamp = Node::now();
     dvl_odometry.header.frame_id = "dvl_a50_link";
-    dvl_odometry.pose = saved_dvldr;
-    dvl_odometry.twist = saved_twist;
+    dvl_odometry.pose = saved_dvldr.pose;
+    dvl_odometry.twist = saved_twist.twist;
     // Publish data
     dvl_pub_odom->publish(dvl_odometry);
 }
